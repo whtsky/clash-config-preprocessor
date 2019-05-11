@@ -95,7 +95,7 @@ rule:
 
 
 
-then output click [this]()
+then output click [this](https://github.com/Kr328/clash-config-preprocessor/blob/master/example/example.output.yml)
 
 
 
