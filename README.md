@@ -61,10 +61,10 @@ proxy-sources:   # load all proxy from clash configure file
 proxy-group-dispatch:
   - name: PROXY               # name
     proxies-filters:          # load from proxy-source
-      black-regex: ".*CN.*"
-      white-regex: ".*HK.*"
+      black-regex: ".*vmess.*"
+      white-regex: ".*ss.*"
     flat-proxies:                  # for hardcode proxies ,will *NOT* filter by filters
-      - "SOME_PROXY"
+      - "vmess"
     type: url-test            # type
     url: "https://www.google.com/generate_204"
     interval: 300             # interval
