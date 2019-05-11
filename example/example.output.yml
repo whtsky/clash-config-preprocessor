@@ -137,6 +137,10 @@ Proxy Group:
   url: https://www.google.com/generate_204
   interval: 300
   proxies:
+  - ss1
+  - ss2
+  - ss3
+  - ss1
   - vmess
 Rule:
 - DOMAIN-SUFFIX,edgedatg.com,PROXY

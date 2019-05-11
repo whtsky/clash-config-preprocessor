@@ -40,7 +40,7 @@ def handle_v1(data: OrderedDict) -> OrderedDict:
 
         for p in proxies:
             p_name: str = p["name"]
-            if white_regex.match(p_name) and not black_regex.match(p_name):
+            if white_regex.fullmatch(p_name) and not black_regex.fullmatch(p_name):
                 ps.append(p_name)
 
         if "flat-proxies" in item:
