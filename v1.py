@@ -43,7 +43,7 @@ def handle_v1(data: OrderedDict) -> OrderedDict:
             if white_regex.fullmatch(p_name) and not black_regex.fullmatch(p_name):
                 ps.append(p_name)
 
-        if "flat-proxies" in item:
+        if "flat-proxies" in item and item["flat-proxies"] is not None:
             ps.extend(item["flat-proxies"])
 
         group_data.pop("proxies-filters", None)
