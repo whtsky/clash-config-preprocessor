@@ -31,6 +31,7 @@ clash-general:
 proxy-sources:
   - type: url
     url: "https://raw.githubusercontent.com/Kr328/clash-config-preprocessor/master/example/proxies.yml"
+    udp: true # 对订阅中没有 udp 字段的服务器增加 udp，会导致不支持 udp 的服务器出错，请自行测试
   - type: plain
     data:
       name: "ss1"
@@ -39,6 +40,7 @@ proxy-sources:
       port: 443
       cipher: AEAD_CHACHA20_POLY1305
       password: "password"
+      udp: true
 
 # 代理组(Proxy Group) 生成规则
 # 预处理器将会读取 *所有载入的代理信息*

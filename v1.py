@@ -22,9 +22,15 @@ def handle_v1(data: OrderedDict) -> OrderedDict:
 
     for item in proxy_sources_dicts:
         if item["type"] == "url":
-            proxies += load_url_proxies(item["url"])
+            if item["udp"]:
+                proxies += load_url_proxies_udp(item["url"])
+            else:
+                proxies += load_url_proxies(item["url"])
         elif item["type"] == "file":
-            proxies += load_file_proxies(item["path"])
+            if item["udp"]:
+                proxies += load_file_proxies_udp(item["path"])
+            else:
+                proxies += load_file_proxies(item["path"])
         elif item["type"] == "plain":
             proxies.append(load_plain_proxies(item))
 
@@ -97,6 +103,14 @@ def load_url_proxies(url: str) -> OrderedDict:
 
     return data_yaml["Proxy"]
 
+def load_url_proxies_udp(url: str) -> OrderedDict:
+    data = requests.get(url)
+    data_yaml: OrderedDict = yaml.load(data.content.decode(), Loader=yaml.Loader)
+    proxy_yaml = data_yaml["Proxy"]
+    for p in proxy_yaml:
+        if not "udp" in p:
+            p["udp"] = True
+    return proxy_yaml
 
 def load_file_proxies(path: str) -> OrderedDict:
     with open(path, "r") as f:
@@ -104,6 +118,14 @@ def load_file_proxies(path: str) -> OrderedDict:
 
     return data_yaml["Proxy"]
 
+def load_file_proxies_udp(path: str) -> OrderedDict:
+    with open(path, "r") as f:
+        data_yaml: OrderedDict = yaml.load(f, Loader=yaml.Loader)
+    proxy_yaml = data_yaml["Proxy"]
+    for p in proxy_yaml:
+        if not "udp" in p:
+            p["udp"] = True
+    return proxy_yaml
 
 def load_plain_proxies(data: OrderedDict) -> OrderedDict:
     return data["data"]
