@@ -21,18 +21,7 @@ def handle_v1(data: OrderedDict) -> OrderedDict:
     proxies: list = []
 
     for item in proxy_sources_dicts:
-        if item["type"] == "url":
-            if item["udp"]:
-                proxies += load_url_proxies_udp(item["url"])
-            else:
-                proxies += load_url_proxies(item["url"])
-        elif item["type"] == "file":
-            if item["udp"]:
-                proxies += load_file_proxies_udp(item["path"])
-            else:
-                proxies += load_file_proxies(item["path"])
-        elif item["type"] == "plain":
-            proxies.append(load_plain_proxies(item))
+        proxies += load_proxies(item)
 
     proxy_group_dispatch_dicts: list = data["proxy-group-dispatch"]
     proxy_groups: list = []
@@ -78,9 +67,11 @@ def handle_v1(data: OrderedDict) -> OrderedDict:
                 item_map[kv[0]] = kv[1]
 
             if item_type == "url":
-                rule_sets[item_name] = load_url_rule_set(item["url"], item_map, item_rule_skip, item_target_skip)
+                rule_sets[item_name] = load_url_rule_set(
+                    item["url"], item_map, item_rule_skip, item_target_skip)
             elif item_type == "file":
-                rule_sets[item_name] = load_file_rule_set(item["path"], item_map, item_rule_skip, item_target_skip)
+                rule_sets[item_name] = load_file_rule_set(
+                    item["path"], item_map, item_rule_skip, item_target_skip)
 
     rules: list = []
 
@@ -97,39 +88,30 @@ def handle_v1(data: OrderedDict) -> OrderedDict:
     return result
 
 
-def load_url_proxies(url: str) -> OrderedDict:
-    data = requests.get(url)
-    data_yaml: OrderedDict = yaml.load(data.content.decode(), Loader=yaml.Loader)
-
-    return data_yaml["Proxy"]
-
-def load_url_proxies_udp(url: str) -> OrderedDict:
-    data = requests.get(url)
-    data_yaml: OrderedDict = yaml.load(data.content.decode(), Loader=yaml.Loader)
-    proxy_yaml = data_yaml["Proxy"]
+def load_proxies(item):
+    if item["type"] == 'plain':
+        return [item['data']]
+    if item["type"] == 'url':
+        data = requests.get(item['url'])
+        data_yaml: OrderedDict = yaml.load(
+            data.content.decode(), Loader=yaml.Loader)
+    else:
+        with open(item['path'], "r") as f:
+            data_yaml: OrderedDict = yaml.load(f, Loader=yaml.Loader)
+    proxy_yaml = data_yaml['Proxy']
     for p in proxy_yaml:
-        if not "udp" in p:
-            p["udp"] = True
+        if 'udp' in item and 'udp' not in p:
+            p['udp'] = item['udp']
+        if 'prefix' in item:
+            p['name'] = item['prefix'] + p['name']
+        if 'suffix' in item:
+            p['name'] += item['suffix']
+        if p['type'] == 'ss':
+            if 'plugin' in item and 'plugin' not in p:
+                p['plugin'] = item['plugin']
+                if 'plugin-opts' in item:
+                    p['plugin-opts'] = item['plugin-opts']
     return proxy_yaml
-
-def load_file_proxies(path: str) -> OrderedDict:
-    with open(path, "r") as f:
-        data_yaml: OrderedDict = yaml.load(f, Loader=yaml.Loader)
-
-    return data_yaml["Proxy"]
-
-def load_file_proxies_udp(path: str) -> OrderedDict:
-    with open(path, "r") as f:
-        data_yaml: OrderedDict = yaml.load(f, Loader=yaml.Loader)
-    proxy_yaml = data_yaml["Proxy"]
-    for p in proxy_yaml:
-        if not "udp" in p:
-            p["udp"] = True
-    return proxy_yaml
-
-def load_plain_proxies(data: OrderedDict) -> OrderedDict:
-    return data["data"]
-
 
 def load_url_rule_set(url: str, targetMap: dict, skipRule: set, skipTarget: set) -> list:
     data = yaml.load(requests.get(url).content, Loader=yaml.Loader)

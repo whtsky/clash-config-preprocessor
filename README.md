@@ -53,6 +53,13 @@ proxy-sources:
   - type: url
     url: "https://raw.githubusercontent.com/Kr328/clash-config-preprocessor/master/example/proxies.yml"
     udp: true # 对订阅中没有 udp 字段的服务器增加 udp，会导致不支持 udp 的服务器出错，请自行测试
+    prefix: "xxcloud - " # 节点名称添加前缀
+    suffix: " - xxcloud" # 节点名称添加后缀
+    plugin: obfs         # 为订阅中没有混淆信息的订阅添加混淆（仅ss）
+    plugin-opts:
+      mode: tls
+      host: download.windowsupdate.com
+
   - type: plain
     data:
       name: "ss1"

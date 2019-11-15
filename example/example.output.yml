@@ -13,14 +13,18 @@ dns:
   nameserver:
   - 127.0.0.1:8053
 Proxy:
-- name: ss1
+- name: xxcloud - ss1 - xxcloud
   type: ss
   server: server
   port: 443
   cipher: AEAD_CHACHA20_POLY1305
   password: password
   udp: true
-- name: ss2
+  plugin: obfs
+  plugin-opts:
+    mode: tls
+    host: download.windowsupdate.com
+- name: xxcloud - ss2 - xxcloud
   type: ss
   server: server
   port: 443
@@ -29,7 +33,8 @@ Proxy:
   plugin: obfs
   plugin-opts:
     mode: tls
-- name: ss3
+  udp: true
+- name: xxcloud - ss3 - xxcloud
   type: ss
   server: server
   port: 443
@@ -38,14 +43,16 @@ Proxy:
   plugin: v2ray-plugin
   plugin-opts:
     mode: websocket
-- name: vmess
+  udp: true
+- name: xxcloud - vmess - xxcloud
   type: vmess
   server: server
   port: 443
   uuid: uuid
   alterId: 32
   cipher: auto
-- name: vmess
+  udp: true
+- name: xxcloud - vmess - xxcloud
   type: vmess
   server: server
   port: 443
@@ -53,7 +60,8 @@ Proxy:
   alterId: 32
   cipher: auto
   tls: true
-- name: vmess
+  udp: true
+- name: xxcloud - vmess - xxcloud
   type: vmess
   server: server
   port: 443
@@ -62,7 +70,8 @@ Proxy:
   cipher: auto
   tls: true
   skip-cert-verify: true
-- name: vmess
+  udp: true
+- name: xxcloud - vmess - xxcloud
   type: vmess
   server: server
   port: 443
@@ -73,7 +82,8 @@ Proxy:
   ws-path: /path
   ws-headers:
     Host: v2ray.com
-- name: vmess
+  udp: true
+- name: xxcloud - vmess - xxcloud
   type: vmess
   server: server
   port: 443
@@ -83,54 +93,64 @@ Proxy:
   network: ws
   ws-path: /path
   tls: true
-- name: socks
+  udp: true
+- name: xxcloud - socks - xxcloud
   type: socks5
   server: server
   port: 443
-- name: socks
+  udp: true
+- name: xxcloud - socks - xxcloud
   type: socks5
   server: server
   port: 443
   username: username
   password: password
-- name: socks
+  udp: true
+- name: xxcloud - socks - xxcloud
   type: socks5
   server: server
   port: 443
   tls: true
-- name: socks
+  udp: true
+- name: xxcloud - socks - xxcloud
   type: socks5
   server: server
   port: 443
   tls: true
   skip-cert-verify: true
-- name: http
+  udp: true
+- name: xxcloud - http - xxcloud
   type: http
   server: server
   port: 443
-- name: http
+  udp: true
+- name: xxcloud - http - xxcloud
   type: http
   server: server
   port: 443
   username: username
   password: password
-- name: http
+  udp: true
+- name: xxcloud - http - xxcloud
   type: http
   server: server
   port: 443
   tls: true
-- name: http
+  udp: true
+- name: xxcloud - http - xxcloud
   type: http
   server: server
   port: 443
   tls: true
   skip-cert-verify: true
+  udp: true
 - name: ss1
   type: ss
   server: server
   port: 443
   cipher: AEAD_CHACHA20_POLY1305
   password: password
+  udp: true
 Proxy Group:
 - name: PROXY
   type: url-test
@@ -138,9 +158,9 @@ Proxy Group:
   interval: 300
   proxies:
   - vmess
-  - ss1
-  - ss2
-  - ss3
+  - xxcloud - ss1 - xxcloud
+  - xxcloud - ss2 - xxcloud
+  - xxcloud - ss3 - xxcloud
   - ss1
   - socks
 Rule:
