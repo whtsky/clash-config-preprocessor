@@ -33,22 +33,23 @@ def handle_v1(data: OrderedDict) -> OrderedDict:
         black_regex = re.compile(item["proxies-filters"]["black-regex"])
         white_regex = re.compile(item["proxies-filters"]["white-regex"])
 
+        flat_proxies: set = set()
+        back_flat_proxies: set = set()
         if "flat-proxies" in item and item["flat-proxies"] is not None:
-            ps.extend(item["flat-proxies"])
-
+            flat_proxies = set(item['flat-proxies'])
+        if "back-flat-proxies" in item and item["back-flat-proxies"] is not None:
+            back_flat_proxies = set(item['back-flat-proxies'])
         for p in proxies:
             p_name: str = p["name"]
-            if white_regex.fullmatch(p_name) and not black_regex.fullmatch(p_name):
+            if white_regex.fullmatch(p_name) and not black_regex.fullmatch(p_name) and p_name not in flat_proxies and p_name not in back_flat_proxies:
                 ps.append(p_name)
 
-        if "back-flat-proxies" in item and item["back-flat-proxies"] is not None:
-            ps.extend(item["back-flat-proxies"])
 
         group_data.pop("proxies-filters", None)
         group_data.pop("flat-proxies", None)
         group_data.pop("back-flat-proxies", None)
 
-        group_data["proxies"] = ps
+        group_data["proxies"] = list(flat_proxies) + ps + list(back_flat_proxies)
 
         proxy_groups.append(group_data)
 
