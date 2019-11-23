@@ -5,6 +5,10 @@ import re
 
 from collections import OrderedDict
 
+supported_rules: dict = {'IP-CIDR': 'IP-CIDR', 'IP-CIDR6': 'IP-CIDR6', 'DOMAIN': 'DOMAIN',
+                         'DOMAIN-KEYWORD': 'DOMAIN-KEYWORD', 'DOMAIN-SUFFIX': 'DOMAIN-SUFFIX',
+                         'GEOIP': 'GEOIP'}
+
 
 def handle_v1(data: OrderedDict) -> OrderedDict:
     preprocessor: OrderedDict = data["preprocessor"]
@@ -62,20 +66,32 @@ def handle_v1(data: OrderedDict) -> OrderedDict:
     if not rule_sets_dicts is None:
         for item in rule_sets_dicts:
             item_name: str = item["name"]
-            item_type: str = item["type"]
-            item_map: dict = {}
-            item_rule_skip = item.get("rule-skip", {})
-            item_target_skip = item.get("target-skip", {})
-            for target_map_element in item.get("target-map", {}):
-                kv: list = target_map_element.split(",")
-                item_map[kv[0]] = kv[1]
+            item_type: str = item['type']
+            if item_type == 'clash':
+                item_source: str = item["source"]
+                item_map: dict = {}
+                item_rule_skip = item.get("rule-skip", {})
+                item_target_skip = item.get("target-skip", {})
+                for target_map_element in item.get("target-map", {}):
+                    kv: list = target_map_element.split(",")
+                    item_map[kv[0]] = kv[1]
 
-            if item_type == "url":
-                rule_sets[item_name] = load_url_rule_set(
-                    item["url"], item_map, item_rule_skip, item_target_skip)
-            elif item_type == "file":
-                rule_sets[item_name] = load_file_rule_set(
-                    item["path"], item_map, item_rule_skip, item_target_skip)
+                if item_source == "url":
+                    rule_sets[item_name] = load_clash_url_rule_set(
+                        item["url"], item_map, item_rule_skip, item_target_skip)
+                elif item_source == "file":
+                    rule_sets[item_name] = load_clash_file_rule_set(
+                        item["path"], item_map, item_rule_skip, item_target_skip)
+
+            elif item_type == 'surge-ruleset':
+                item_source: str = item["source"]
+                item_target: str = item["target"]
+                if item_source == "url":
+                    rule_sets[item_name] = load_surge_url_rule_set(
+                        item["url"], item_target)
+                elif item_source == "file":
+                    rule_sets[item_name] = load_surge_file_rule_set(
+                        item["path"], item_target)
 
     rules: list = []
 
@@ -117,7 +133,8 @@ def load_proxies(item):
                     p['plugin-opts'] = item['plugin-opts']
     return proxy_yaml
 
-def load_url_rule_set(url: str, targetMap: dict, skipRule: set, skipTarget: set) -> list:
+
+def load_clash_url_rule_set(url: str, targetMap: dict, skipRule: set, skipTarget: set) -> list:
     data = yaml.load(requests.get(url).content, Loader=yaml.Loader)
     result: list = []
 
@@ -133,7 +150,7 @@ def load_url_rule_set(url: str, targetMap: dict, skipRule: set, skipTarget: set)
     return result
 
 
-def load_file_rule_set(path: str, targetMap: dict, skipRule: set, skipTarget: set) -> list:
+def load_clash_file_rule_set(path: str, targetMap: dict, skipRule: set, skipTarget: set) -> list:
     with open(path, "r") as f:
         data = yaml.load(f, Loader=yaml.Loader)
     result: list = []
@@ -146,5 +163,31 @@ def load_file_rule_set(path: str, targetMap: dict, skipRule: set, skipTarget: se
                 result.append(str(rule).replace(original_target, map_to))
             else:
                 result.append(rule)
+
+    return result
+
+def load_surge_url_rule_set(url: str, target: str):
+    data = requests.get(url).text.splitlines()
+    result: list = []
+
+    for raw_rule in data:
+        rule = raw_rule.split(',')
+        if rule[0] in supported_rules:
+            result.append(supported_rules[rule[0]] + ',' + rule[1] + ',' + target)
+        # else:
+            # print('# ' + raw_rule)
+
+    return result
+
+def load_surge_file_rule_set(path: str, target: str):
+    with open(path,"r") as f:
+        data = f.read()
+
+    result: list = []
+
+    for raw_rule in data:
+        rule = raw_rule.split(',')
+        if rule[0] in supported_rules:
+            result.append(supported_rules[rule[0]] + ',' + rule[1] + ',' + target)
 
     return result

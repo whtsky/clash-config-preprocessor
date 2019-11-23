@@ -90,8 +90,9 @@ proxy-group-dispatch:
 # 从外部载入一个规则集 并将其应用于规则
 rule-sets:
   - name: lhie # 名称
-    type: url  # 类新 目前仅支持 url
-    url: 'https://raw.githubusercontent.com/lhie1/Rules/master/Clash/Rule.yml'
+    type: clash  # 类型
+    source: url  # 来源，url 或 file
+    url: 'https://raw.githubusercontent.com/lhie1/Rules/master/Clash/Rule.yml'  # 如果是 file 则需要 path
     target-map:             # 用于替换 单条规则 的 目标代理组 不需要请把该行一起删除，勿留空列表
       - 'AdBlock,REJECT'
       - 'Media,PROXY'
@@ -100,14 +101,22 @@ rule-sets:
       - 'Domestic,DIRECT'
       - 'Proxy,PROXY'
     rule-skip:              # 跳过部分匹配 规则  不需要请把该行一起删除，勿留空列表
+      - 'GEOIP'
       - 'MATCH'
     target-skip:            # 跳过部分目标代理组 不需要请把该行一起删除，勿留空列表
       - 'Final'
       - 'Others'
 
+  - name: lhie-AD
+    type: surge-ruleset
+    source: url
+    url: 'https://raw.githubusercontent.com/lhie1/Rules/master/Surge3/Reject.list'
+    target: 'REJECT'
+
 # 规则
 # 将会 处理后 输出到 目标文件的 Rule
 rule:
+  - 'RULE-SET,lhie-AD'                      # 将会从上述规则集展开
   - 'RULE-SET,lhie'                      # 将会从上述规则集展开
   - 'DOMAIN-SUFFIX,google.com,PROXY'
   - 'DOMAIN-KEYWORD,google,PROXY'
@@ -117,7 +126,6 @@ rule:
   - 'SOURCE-IP-CIDR,192.168.1.201/32,DIRECT'
   - 'GEOIP,CN,DIRECT'
   - 'MATCH,PROXY'
-'
 ```
 
 
