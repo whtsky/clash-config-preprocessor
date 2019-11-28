@@ -5,13 +5,14 @@ import sys
 import yaml
 import utils
 import v1
+import v2
 
 _HELP_TEXT = """\
 Usage: python main.py <source-path>
     <source-path>: path to clash config preprocessor config
 
 See also:
-    https://github.com/Kr328/clash-config-preprocessor
+    https://github.com/Howard-00/clash-config-preprocessor
 """
 
 
@@ -28,6 +29,8 @@ def main():
 
     if data["preprocessor"]["version"] == 1:
         result = v1.handle_v1(data)
+    elif data["preprocessor"]["version"] == 2:
+        result = v2.handle_v2(data)
     else:
         print("Unsupported version")
         return

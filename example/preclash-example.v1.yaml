@@ -30,7 +30,7 @@ clash-general:
 # 读取的文件 必须是 一个标准的 clash 配置文件
 proxy-sources:
   - type: url
-    url: "https://raw.githubusercontent.com/Kr328/clash-config-preprocessor/master/example/proxies.yml"
+    url: "https://raw.githubusercontent.com/Howard-00/clash-config-preprocessor/master/example/proxies.yml"
     udp: true # 对订阅中没有 udp 字段的服务器增加 udp，会导致不支持 udp 的服务器出错，请自行测试
     prefix: "xxcloud - " # 节点名称添加前缀
     suffix: " - xxcloud" # 节点名称添加后缀
