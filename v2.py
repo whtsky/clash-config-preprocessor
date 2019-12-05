@@ -35,8 +35,12 @@ def handle_v2(data: OrderedDict) -> OrderedDict:
         if "flat-proxies" in item and item["flat-proxies"] is not None:
             ps += item['flat-proxies']
 
-        if "proxies-filters" in item and  item["proxies-filters"] is not None:
+        if "proxies-filters" in item and item["proxies-filters"] is not None:
             for filters in item["proxies-filters"]:
+                if filters[0]["type"] == 'plain':
+                    for i in range(1, len(filters)):
+                        ps.append(filters[i])
+                    break
                 filters_init(filters)  # convert
                 for p in proxies:
                     p_name: str = p["name"]
@@ -92,7 +96,7 @@ def handle_v2(data: OrderedDict) -> OrderedDict:
 
     result["Proxy"] = proxies
     result["Proxy Group"] = proxy_groups
-    result["Rule"] = sorted(set(rules), key = rules.index)   # unique
+    result["Rule"] = sorted(set(rules), key=rules.index)   # unique
 
     return result
 
@@ -186,7 +190,9 @@ def load_surge_file_rule_set(path: str, target: str):
 
     return result
 
+
 graw_rule: str
+
 
 def rule_filter(rules: list, filters: list):
     filters_init(filters)
@@ -196,9 +202,10 @@ def rule_filter(rules: list, filters: list):
         graw_rule = raw_rule
         if(filter_solver(filters)):
             rule_remove.append(raw_rule)
-        rules[i] = graw_rule;
+        rules[i] = graw_rule
     for p in rule_remove:
         rules.remove(p)
+
 
 def filter_solver(filters: list) -> bool:
     global graw_rule
