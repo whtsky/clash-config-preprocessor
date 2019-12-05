@@ -241,7 +241,7 @@ def check(rule: list, filter: OrderedDict) -> bool:
 
     if "target" in filter and filter["target"] is not None:
         match = False
-        for p in filter["type"]:
+        for p in filter["target"]:
             if p == rule[2]:
                 match = True
         if not match:
