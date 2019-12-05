@@ -228,15 +228,23 @@ def filter_solver(filters: list) -> bool:
 
 def check(rule: list, filter: OrderedDict) -> bool:
     if "type" in filter and filter["type"] is not None:
+        match = False
         for p in filter["type"]:
-            if p != rule[0]:
-                return False
+            if p == rule[0]:
+                match = True
+        if not match:
+            return False
+
     if "pattern" in filter and filter["pattern"] is not None:
         if not filter["pattern"].fullmatch(rule[1]):
             return False
+
     if "target" in filter and filter["target"] is not None:
-        for p in filter["target"]:
-            if p != rule[2]:
-                return False
+        match = False
+        for p in filter["type"]:
+            if p == rule[2]:
+                match = True
+        if not match:
+            return False
 
     return True
