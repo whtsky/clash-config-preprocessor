@@ -40,7 +40,7 @@ def handle_v2(data: OrderedDict) -> OrderedDict:
                 if filters[0]["type"] == 'plain':
                     for i in range(1, len(filters)):
                         ps.append(filters[i])
-                    break
+                    continue
                 filters_init(filters)  # convert
                 for p in proxies:
                     p_name: str = p["name"]
