@@ -35,7 +35,10 @@ def main():
         print("Unsupported version")
         return
 
-    print(yaml.dump(result, default_flow_style=False))
+    thedumper = yaml.Dumper
+    thedumper.ignore_aliases = lambda self, data: True
+
+    print(yaml.dump(result, default_flow_style=False, Dumper=thedumper))
 
 
 if __name__ == "__main__":
