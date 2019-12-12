@@ -1,6 +1,7 @@
 import requests
 import utils
-import yaml
+from ruamel.yaml import YAML
+yaml = YAML(typ='safe')
 import re
 
 from collections import OrderedDict
@@ -126,10 +127,10 @@ def load_proxies(item):
     if item["type"] == 'url':
         data = requests.get(item['url'])
         data_yaml: OrderedDict = yaml.load(
-            data.content.decode(), Loader=yaml.Loader)
+            data.content.decode())
     else:
         with open(item['path'], "r") as f:
-            data_yaml: OrderedDict = yaml.load(f, Loader=yaml.Loader)
+            data_yaml: OrderedDict = yaml.load(f)
     proxy_yaml = data_yaml['Proxy']
     for p in proxy_yaml:
         if 'udp' in item and 'udp' not in p:
@@ -147,7 +148,7 @@ def load_proxies(item):
 
 
 def load_clash_url_rule_set(url: str) -> list:
-    data = yaml.load(requests.get(url).content, Loader=yaml.Loader)
+    data = yaml.load(requests.get(url).content)
     if "Rule" in data:
         return list(data["Rule"])
     return []
@@ -155,7 +156,7 @@ def load_clash_url_rule_set(url: str) -> list:
 
 def load_clash_file_rule_set(path: str) -> list:
     with open(path, "r") as f:
-        data = yaml.load(f, Loader=yaml.Loader)
+        data = yaml.load(f)
     if "Rule" in data:
         return list(data["Rule"])
     return []
