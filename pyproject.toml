@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "clash_config_preprocessor"
+version = "0.1.1"
+description = ""
+authors = []
+license = "GPL-3.0"
+readme = "README.md"
+repository = "https://github.com/whtsky/clash-config-preprocessor"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+requests = "^2.22.0"
+PyYAML = "^5.3"
+
+[tool.poetry.dev-dependencies]
+black = "^19.10b0"
+pytest = "^5.3.5"
+snapshottest = "^0.5.1"
+
+[tool.poetry.scripts]
+clash_config_preprocessor = "clash_config_preprocessor.cli:cli"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
