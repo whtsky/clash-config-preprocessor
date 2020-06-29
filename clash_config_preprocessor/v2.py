@@ -102,9 +102,9 @@ def handle_v2(data: dict) -> dict:
         else:
             rules.append(rule)
 
-    result["Proxy"] = proxies
-    result["Proxy Group"] = proxy_groups
-    result["Rule"] = sorted(set(rules), key=rules.index)  # unique
+    result["proxies"] = proxies
+    result["proxy-groups"] = proxy_groups
+    result["rules"] = sorted(set(rules), key=rules.index)  # unique
 
     return result
 
@@ -119,7 +119,7 @@ def filters_init(filters):
                 maps[i] = maps[i].split(",")
 
 
-def proxy_filter(name, filters):
+def proxy_filter(name: str, filters):
     for filter in filters:
         if filter["type"] == "white-regex" and filter["pattern"].fullmatch(name):
             return True
@@ -153,19 +153,23 @@ def load_proxies(item):
     return proxy_yaml
 
 
-def load_clash_url_rule_set(url: str) -> list:
-    data = safe_load_yaml(requests.get(url).content)
+def load_clash_data(data: dict) -> list:
     if "Rule" in data:
         return list(data["Rule"])
+    if "rules" in data:
+        return list(data["rules"])
     return []
+
+
+def load_clash_url_rule_set(url: str) -> list:
+    data = safe_load_yaml(requests.get(url).content)
+    return load_clash_data(data)
 
 
 def load_clash_file_rule_set(path: str) -> list:
     with open(path, "r") as f:
         data = safe_load_yaml(f)
-    if "Rule" in data:
-        return list(data["Rule"])
-    return []
+    return load_clash_data(data)
 
 
 def load_surge_url_rule_set(url: str, target: str):
