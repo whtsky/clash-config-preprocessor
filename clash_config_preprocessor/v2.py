@@ -127,6 +127,19 @@ def proxy_filter(name: str, filters):
             return False
     return False
 
+def load_clash_rules(data: dict) -> list:
+    if "Rule" in data:
+        return list(data["Rule"])
+    if "rules" in data:
+        return list(data["rules"])
+    return []
+
+def load_clash_proxies(data: dict) -> list:
+    if "Proxy" in data:
+        return list(data["Proxy"])
+    if "proxies" in data:
+        return list(data["proxies"])
+    return []
 
 def load_proxies(item):
     if item["type"] == "plain":
@@ -137,7 +150,7 @@ def load_proxies(item):
     else:
         with open(item["path"], "r") as f:
             data_yaml: dict = safe_load_yaml(f)
-    proxy_yaml = data_yaml["Proxy"]
+    proxy_yaml = load_clash_proxies(data_yaml)
     for p in proxy_yaml:
         if "udp" in item and "udp" not in p:
             p["udp"] = item["udp"]
@@ -153,23 +166,17 @@ def load_proxies(item):
     return proxy_yaml
 
 
-def load_clash_data(data: dict) -> list:
-    if "Rule" in data:
-        return list(data["Rule"])
-    if "rules" in data:
-        return list(data["rules"])
-    return []
 
 
 def load_clash_url_rule_set(url: str) -> list:
     data = safe_load_yaml(requests.get(url).content)
-    return load_clash_data(data)
+    return load_clash_rules(data)
 
 
 def load_clash_file_rule_set(path: str) -> list:
     with open(path, "r") as f:
         data = safe_load_yaml(f)
-    return load_clash_data(data)
+    return load_clash_rules(data)
 
 
 def load_surge_url_rule_set(url: str, target: str):
