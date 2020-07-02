@@ -127,6 +127,7 @@ def proxy_filter(name: str, filters):
             return False
     return False
 
+
 def load_clash_rules(data: dict) -> list:
     if "Rule" in data:
         return list(data["Rule"])
@@ -134,12 +135,14 @@ def load_clash_rules(data: dict) -> list:
         return list(data["rules"])
     return []
 
+
 def load_clash_proxies(data: dict) -> list:
     if "Proxy" in data:
         return list(data["Proxy"])
     if "proxies" in data:
         return list(data["proxies"])
     return []
+
 
 def load_proxies(item):
     if item["type"] == "plain":
@@ -164,8 +167,6 @@ def load_proxies(item):
                 if "plugin-opts" in item:
                     p["plugin-opts"] = item["plugin-opts"]
     return proxy_yaml
-
-
 
 
 def load_clash_url_rule_set(url: str) -> list:
